@@ -1,0 +1,4 @@
+node_modules
+.DS_Store
+dist/build/*.zip
+dist/unpacked/stop-scrolling.js

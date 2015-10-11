@@ -1,0 +1,24 @@
+{
+  "name": "stop-scrolling",
+  "version": "0.1.0",
+  "description": "Go to Facebook just for work, but then be distracted by Newsfeed?. \"Stop Scrolling Facebook\" is here to help you get back to work!",
+  "main": "stop-scrolling.js",
+  "scripts": {
+    "dev": "webpack --progress --colors --watch",
+    "build": "webpack -p && (cd dist/unpacked && zip -r ../build/StopScrollingFacebook_Latest.zip .)",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "newsfeed",
+    "facebook",
+    "scrolling",
+    "focus"
+  ],
+  "author": "Long Nguyen",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^5.8.25",
+    "babel-loader": "^5.3.2",
+    "webpack": "^1.12.2"
+  }
+}
