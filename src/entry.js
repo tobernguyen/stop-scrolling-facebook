@@ -2,6 +2,7 @@ import $ from 'jquery';
 
 var $newsfeedContainer;
 var $streamContainer;
+var isHidingNewsFeed = false;
 let $STOP_SCROLLING_OVERLAY_TEMPLATE = $("<div id=\"ss-newsfeed-overlay\"><div class=\"ss-dialog\"></div></div>")
 let OVERLAY_DEFAULT_STYLE = { 
                               'position': 'absolute', 
@@ -13,9 +14,9 @@ let OVERLAY_DEFAULT_STYLE = {
 let STEAM_CONTAINER_SELECTOR = '#stream_pagelet'
 let SS_DIALOG_CONTENT = `
     <h1>You REALLY want to scroll Facebook newsfeed all day???</h3>
-    <a href="#" class="ss-open-nf" data-amount="5"><p>Nooooo! Just 5 mins :)</p></a>
-    <a href="#" class="ss-open-nf" data-amount="15"><p>Nah! Just 15 mins :D</p></a>
-    <a href="#" class="ss-open-nf" data-amount="30"><p>Just 30 mins :(</p></a>
+    <a href="#" class="ss-open-nf" data-amount="15"><p>Nooooo! Just 15 secs :)</p></a>
+    <a href="#" class="ss-open-nf" data-amount="60"><p>Nah! Just 1 min :D</p></a>
+    <a href="#" class="ss-open-nf" data-amount="300"><p>Just 5 mins :(</p></a>
   `
 let NEWSFEED_STREAM_MATCHER = /^topnews_main_stream/;
 
@@ -32,13 +33,13 @@ function hideNewsfeed() {
   return prependToNewsFeed($STOP_SCROLLING_OVERLAY_TEMPLATE)
 }
 
-function openNewsFeed(minuteToOpen) {
+function openNewsFeed(secToOpen) {
   $STOP_SCROLLING_OVERLAY_TEMPLATE.hide()
   setTimeout(function() {
     $STOP_SCROLLING_OVERLAY_TEMPLATE.show()
     $("html, body").animate({ scrollTop: 0 }, "medium")
-  }, minuteToOpen * 60 * 1000)
-  console.log(`Open for ${minuteToOpen}`)
+  }, secToOpen * 1000)
+  console.log(`Open for ${secToOpen} secs`)
 }
 
 function showStopScrollingDialog() {
@@ -48,24 +49,35 @@ function showStopScrollingDialog() {
   $stopScrollingDialog.html(SS_DIALOG_CONTENT)
   $stopScrollingDialog.find('.ss-open-nf').each(function() {
     $(this).click(function() {
-      let minuteToOpen = parseInt($(this).data('amount'))
-      openNewsFeed(minuteToOpen)
+      let secToOpen = parseInt($(this).data('amount'))
+      openNewsFeed(secToOpen)
     })
   })
 }
 
-// Start script
-setTimeout(function() {
+function checkForNewsfeed(callBackOnNewsFeedFound) {
   $streamContainer = $(STEAM_CONTAINER_SELECTOR);
+  let $newsFeedElement = null;
+
   let findNewsFeedContainer = $streamContainer.children().each(function() {
     if (NEWSFEED_STREAM_MATCHER.test(this.id)) {
-      $newsfeedContainer = $(this);
+      $newsFeedElement = $(this)
     }
   })
 
   $.when(findNewsFeedContainer).done(function() {
-    if ($newsfeedContainer != undefined || $newsfeedContainer != null) {
-      hideNewsfeed().promise().done(showStopScrollingDialog);
+    if ($newsFeedElement != undefined && $newsFeedElement != null && $newsFeedElement.data('injected') != 'true') {
+      $newsFeedElement.data('injected', 'true')
+      $newsfeedContainer = $newsFeedElement
+      console.log('SSF Injected')
+      callBackOnNewsFeedFound($newsFeedElement)
     }
   })
-}, 1000);
+}
+
+// Interval check for news feed appearant
+setInterval(function() {
+  checkForNewsfeed(function($newsfeedContainer) {
+    hideNewsfeed().promise().done(showStopScrollingDialog)
+  })
+}, 1000)
