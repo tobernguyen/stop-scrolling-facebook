@@ -20,6 +20,10 @@ let SS_DIALOG_CONTENT = `
   `
 let NEWSFEED_STREAM_MATCHER = /^topnews_main_stream/;
 
+function scrollToTop() {
+  $("html, body").animate({ scrollTop: 0 }, "medium")
+}
+
 function calculateOverlayCss () {
   return $.extend(OVERLAY_DEFAULT_STYLE, { 'width': $newsfeedContainer.width() })
 }
@@ -29,6 +33,7 @@ function prependToNewsFeed(element) {
 }
 
 function hideNewsfeed() {
+  scrollToTop()
   $STOP_SCROLLING_OVERLAY_TEMPLATE.css(calculateOverlayCss())
   return prependToNewsFeed($STOP_SCROLLING_OVERLAY_TEMPLATE)
 }
@@ -37,7 +42,7 @@ function openNewsFeed(secToOpen) {
   $STOP_SCROLLING_OVERLAY_TEMPLATE.hide()
   setTimeout(function() {
     $STOP_SCROLLING_OVERLAY_TEMPLATE.show()
-    $("html, body").animate({ scrollTop: 0 }, "medium")
+    scrollToTop()
   }, secToOpen * 1000)
   console.log(`Open for ${secToOpen} secs`)
 }
