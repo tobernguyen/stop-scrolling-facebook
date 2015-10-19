@@ -2,7 +2,6 @@ import $ from 'jquery';
 
 var $newsfeedContainer;
 var $streamContainer;
-var isHidingNewsFeed = false;
 let $STOP_SCROLLING_OVERLAY_TEMPLATE = $("<div id=\"ss-newsfeed-overlay\"><div class=\"ss-dialog\"></div></div>")
 let OVERLAY_DEFAULT_STYLE = { 
                               'position': 'absolute', 
@@ -38,13 +37,33 @@ function hideNewsfeed() {
   return prependToNewsFeed($STOP_SCROLLING_OVERLAY_TEMPLATE)
 }
 
+function reShowNewsfeed() {
+  $STOP_SCROLLING_OVERLAY_TEMPLATE.show()
+
+  $streamContainer = $(STEAM_CONTAINER_SELECTOR)
+  let $newsFeedElement = null;
+
+  let findNewsFeedContainer = $streamContainer.children().each(function() {
+    if (NEWSFEED_STREAM_MATCHER.test(this.id)) {
+      $newsFeedElement = $(this)
+    }
+  })
+
+  // Check if user still on News Feed page, otherwise do nothing
+  $.when(findNewsFeedContainer).done(function() {
+    if ($newsFeedElement != undefined && $newsFeedElement != null && $newsFeedElement.data('injected') == 'true') {
+      $streamContainer.find('#ss-newsfeed-overlay').show()
+      scrollToTop()
+    }
+  })
+}
+
 function openNewsFeed(secToOpen) {
   $STOP_SCROLLING_OVERLAY_TEMPLATE.hide()
-  setTimeout(function() {
-    $STOP_SCROLLING_OVERLAY_TEMPLATE.show()
-    scrollToTop()
-  }, secToOpen * 1000)
   console.log(`Open for ${secToOpen} secs`)
+
+  // Set timer to hide news feed again
+  setTimeout(reShowNewsfeed, secToOpen * 1000)
 }
 
 function showStopScrollingDialog() {
