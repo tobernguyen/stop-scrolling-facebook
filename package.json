@@ -4,8 +4,8 @@
   "description": "Go to Facebook just for work, but then be distracted by Newsfeed?. \"Stop Scrolling Facebook\" is here to help you get back to work!",
   "main": "stop-scrolling.js",
   "scripts": {
-    "dev": "webpack --progress --colors --watch",
-    "build": "webpack -p && (cd dist/unpacked && zip -r ../build/StopScrollingFacebook_Latest.zip .)",
+    "dev": "webpack -d --progress --colors --watch",
+    "build": "rm -rf dist/unpacked/stop-scrolling.js.map && webpack -p && (cd dist/unpacked && zip -r ../build/StopScrollingFacebook_Latest.zip .)",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
