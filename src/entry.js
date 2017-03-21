@@ -13,7 +13,7 @@ let OVERLAY_DEFAULT_STYLE = {
                             }
 let STEAM_CONTAINER_SELECTOR = '#stream_pagelet'
 let SS_DIALOG_CONTENT = `
-    <h1>You REALLY want to scroll Facebook newsfeed all day???</h3>
+    <h1>You REALLY want to scroll Facebook newsfeed all day???</h1>
     <a href="#" class="ss-open-nf" data-amount="15"><p>Nooooo! Just 15 secs :)</p></a>
     <a href="#" class="ss-open-nf" data-amount="60"><p>Nah! Just 1 min :D</p></a>
     <a href="#" class="ss-open-nf" data-amount="300"><p>Just 5 mins :(</p></a>
@@ -21,6 +21,14 @@ let SS_DIALOG_CONTENT = `
     <p><strong>USE WITH CAUTION</strong></p>
     <a href="#" class="ss-open-nf" data-amount="600"><p>I NEED 10 MINUTES !</p></a>
     <a href="#" class="ss-open-nf" data-amount="1800"><p>I AM THIRSTY. GIVE ME 30 MINUTES !!!</p></a>
+    <hr />
+    <strong>Helpful links</strong>
+    <a href="https://chrome.google.com/webstore/detail/stop-scrolling-facebook/iceobahpfmegcflceepjpplhhbhdlakk/reviews" target="_blank">
+      <p>Rate this application ★★★★★</p>
+    </a>
+    <a href="https://chrome.google.com/webstore/detail/stop-scrolling-facebook/iceobahpfmegcflceepjpplhhbhdlakk/support" target="_blank">
+      <p>Ask for support or tell us your suggestion to make this application better</p>
+    </a>
   `
 let NEWSFEED_STREAM_MATCHER = /^topnews_main_stream/;
 
