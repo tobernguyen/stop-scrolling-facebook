@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import noty from 'noty';
 
 var $newsfeedContainer;
 var $streamContainer;
@@ -25,6 +26,31 @@ let NEWSFEED_STREAM_MATCHER = /^topnews_main_stream/;
 
 function scrollToTop() {
   $("html, body").animate({ scrollTop: 0 }, "medium")
+}
+
+function flashScreenTimeLeft() {
+  $streamContainer = $(STEAM_CONTAINER_SELECTOR)
+  let $newsFeedElement = null;
+
+  let findNewsFeedContainer = $streamContainer.children().each(function() {
+    if (NEWSFEED_STREAM_MATCHER.test(this.id)) {
+      $newsFeedElement = $(this)
+    }
+  })
+
+  // Check if user still on News Feed page, otherwise do nothing
+  $.when(findNewsFeedContainer).done(function() {
+    if ($newsFeedElement != undefined && $newsFeedElement != null && $newsFeedElement.data('injected') == 'true') {
+      noty({
+        layout: 'top',
+        theme: 'metroui',
+        text: '<strong>The Newsfeed will be closed in 15 seconds</strong>',
+        type: 'warning',
+        timeout: 15000,
+        progressBar: true
+      });
+    }
+  })
 }
 
 function calculateOverlayCss () {
@@ -68,6 +94,9 @@ function openNewsFeed(secToOpen) {
 
   // Set timer to hide news feed again
   setTimeout(reShowNewsfeed, secToOpen * 1000)
+
+  // Set timer for reminder
+  setTimeout(flashScreenTimeLeft, (secToOpen - 15) * 1000);
 }
 
 function showStopScrollingDialog() {
