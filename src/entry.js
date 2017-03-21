@@ -6,7 +6,7 @@ let $STOP_SCROLLING_OVERLAY_TEMPLATE = $("<div id=\"ss-newsfeed-overlay\"><div c
 let OVERLAY_DEFAULT_STYLE = { 
                               'position': 'absolute', 
                               'height': '100%', 
-                              'z-index': '1', 
+                              'z-index': '100', 
                               'background-color': 'white', 
                               'opacity': '0.98' 
                             }
