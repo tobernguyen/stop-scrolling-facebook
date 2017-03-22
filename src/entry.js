@@ -36,31 +36,6 @@ function scrollToTop() {
   $("html, body").animate({ scrollTop: 0 }, "medium")
 }
 
-function flashScreenTimeLeft() {
-  $streamContainer = $(STEAM_CONTAINER_SELECTOR)
-  let $newsFeedElement = null;
-
-  let findNewsFeedContainer = $streamContainer.children().each(function() {
-    if (NEWSFEED_STREAM_MATCHER.test(this.id)) {
-      $newsFeedElement = $(this)
-    }
-  })
-
-  // Check if user still on News Feed page, otherwise do nothing
-  $.when(findNewsFeedContainer).done(function() {
-    if ($newsFeedElement != undefined && $newsFeedElement != null && $newsFeedElement.data('injected') == 'true') {
-      noty({
-        layout: 'top',
-        theme: 'metroui',
-        text: '<strong>The Newsfeed will be closed in 15 seconds</strong>',
-        type: 'warning',
-        timeout: 15000,
-        progressBar: true
-      });
-    }
-  })
-}
-
 function calculateOverlayCss () {
   return $.extend(OVERLAY_DEFAULT_STYLE, { 'width': $newsfeedContainer.width() })
 }
@@ -75,9 +50,15 @@ function hideNewsfeed() {
   return prependToNewsFeed($STOP_SCROLLING_OVERLAY_TEMPLATE)
 }
 
-function reShowNewsfeed() {
-  $STOP_SCROLLING_OVERLAY_TEMPLATE.show()
+function getPlayingVideoElem() {
+  let playingVideoElem;
+  $("video").each(function() {
+    if (!this.paused) playingVideoElem = this;
+  });
+  return playingVideoElem;
+}
 
+function reShowNewsfeed() {
   $streamContainer = $(STEAM_CONTAINER_SELECTOR)
   let $newsFeedElement = null;
 
@@ -90,8 +71,66 @@ function reShowNewsfeed() {
   // Check if user still on News Feed page, otherwise do nothing
   $.when(findNewsFeedContainer).done(function() {
     if ($newsFeedElement != undefined && $newsFeedElement != null && $newsFeedElement.data('injected') == 'true') {
-      $streamContainer.find('#ss-newsfeed-overlay').show()
-      scrollToTop()
+      let closeNewsFeed = function() {
+        $STOP_SCROLLING_OVERLAY_TEMPLATE.show();
+        $streamContainer.find('#ss-newsfeed-overlay').show()
+        scrollToTop();
+      }
+      
+      // Check if there are a video playing
+      // if yes, wait until it pause/ended
+      // otherwise close newsfeed immediately
+      let playingVideoElem = getPlayingVideoElem();
+      console.log('playing video', playingVideoElem);
+      if (playingVideoElem) {
+        playingVideoElem.onpause = () => {
+          closeNewsFeed();
+          playingVideoElem.onpause = null;
+        };
+      } else {
+        closeNewsFeed();
+      }
+    }
+  })
+}
+
+function flashScreenTimeLeft() {
+  $streamContainer = $(STEAM_CONTAINER_SELECTOR)
+  let $newsFeedElement = null;
+
+  let findNewsFeedContainer = $streamContainer.children().each(function() {
+    if (NEWSFEED_STREAM_MATCHER.test(this.id)) {
+      $newsFeedElement = $(this)
+    }
+  })
+
+  // Check if user still on News Feed page, otherwise do nothing
+  $.when(findNewsFeedContainer).done(function() {
+    if ($newsFeedElement != undefined && $newsFeedElement != null && $newsFeedElement.data('injected') == 'true') {
+      let notyTimeOutInSecs = 15;
+      let notyText;
+      let showProgressBar = true;
+      // Check if there are a video playing
+      // if yes, wait until it pause/ended
+      // otherwise close newsfeed immediately
+      let playingVideoElem = getPlayingVideoElem();
+      if (playingVideoElem) {
+        let videoRemainingSeconds = parseInt(playingVideoElem.duration - playingVideoElem.currentTime);
+        notyText = `<strong>Video playing detected</strong><br/>Newsfeed will be close when video is paused or after it is ended (${videoRemainingSeconds} seconds remaining)`;
+        showProgressBar = false;
+        notyTimeOutInSecs = 10;
+      } else {
+        notyText = `<strong>The Newsfeed will be closed in ${notyTimeOutInSecs} seconds</strong>`;
+      }
+
+      noty({
+        layout: 'top',
+        theme: 'metroui',
+        text: notyText,
+        type: 'warning',
+        timeout: notyTimeOutInSecs * 1000,
+        progressBar: showProgressBar
+      });
     }
   })
 }
