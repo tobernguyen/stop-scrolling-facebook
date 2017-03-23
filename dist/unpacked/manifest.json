@@ -15,5 +15,8 @@
       "css": ["stop-scrolling.css"],
       "run_at": "document_idle"
     }
+  ],
+  "permissions": [
+    "storage"
   ]
 }

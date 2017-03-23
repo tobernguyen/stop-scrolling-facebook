@@ -1,6 +1,11 @@
 # Change log
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 2017-23-03
+### Added
+- Detect if there is a playing video. Newsfeed will be closed only when the video got paused or ended
+- An option allows user to enable above feature or not
+
 ## [1.0.1] - 2017-21-03
 ### Added
 - Helpful links: Rate this application link and submit suggestion link
