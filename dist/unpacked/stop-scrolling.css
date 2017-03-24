@@ -1,3 +1,6 @@
 .ss-dialog {
   padding: 15px;
 }
+span#scroll-time-count {
+  color: #4267b2;
+}

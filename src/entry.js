@@ -13,6 +13,7 @@ let OVERLAY_DEFAULT_STYLE = {
                             }
 let STEAM_CONTAINER_SELECTOR = '#stream_pagelet'
 let SS_DIALOG_CONTENT = `
+    <h1>You've been scrolling Facebook for <span id="scroll-time-count"></span> minutes today!</p>
     <h1>You REALLY want to scroll Facebook newsfeed all day???</h1>
     <a href="#" class="ss-open-nf" data-amount="15"><p>Nooooo! Just 15 secs :)</p></a>
     <a href="#" class="ss-open-nf" data-amount="60"><p>Nah! Just 1 min :D</p></a>
@@ -47,17 +48,82 @@ let SS_DIALOG_CONTENT = `
       <p>Change log</p>
     </a>
   `
-let NEWSFEED_STREAM_MATCHER = /^topnews_main_stream/;
+let NEWSFEED_STREAM_MATCHER = /^topnews_main_stream/
 let settings = {
-  waitForVideo: true
-};
+  waitForVideo: true,
+  currentDate: getTodayTimeString(),
+  timeCountToday: 0
+}
+
+function getTodayTimeString() {
+  let currentDate = new Date()
+  return `${currentDate.getDate()}-${currentDate.getMonth()}-${currentDate.getFullYear()}`
+}
+
+const SETTINGS_TEMPLATE = {
+  waitForVideo: true,
+  currentDate: getTodayTimeString(),
+  timeCountToday: 0
+}
+
+// GET config from storage
+chrome.storage.sync.get(SETTINGS_TEMPLATE, (items) => {
+  settings = items;
+})
+
+// What to do receive new storage value
+chrome.storage.onChanged.addListener(items => {
+  console.log('storage changed', items)
+  Object.keys(items).forEach(k => {
+    if (items[k].newValue !== undefined) settings[k] = items[k].newValue
+  })
+  if (Object.keys(items).includes('timeCountToday')) {
+
+  }
+  console.log('new settings', settings)
+})
 
 // Interval check for news feed appearant
-setInterval(function() {
-  checkForNewsfeed(function($newsfeedContainer) {
-    hideNewsfeed().promise().done(showStopScrollingDialog)
+let firstCheckInterval = setInterval(function() {
+  backgroundCheckForNewsfeed(() => {
+    clearInterval(firstCheckInterval);
+    setInterval(backgroundCheckForNewsfeed, 1000)
   })
-}, 1000)
+}, 50)
+let backgroundCheckForNewsfeed = function(cb) {
+  checkForNewsfeed(function($newsfeedContainer) {
+    hideNewsfeed().promise().done(() => {
+      showStopScrollingDialog()
+      if (typeof cb === 'function') cb()
+    })
+  })
+}
+
+let timerInterval;
+
+function startTimer() {
+  timerInterval = setInterval(countAndUpdateScrollingTime, 12000)
+}
+
+function stopTimer() {
+  if (timerInterval) clearInterval(timerInterval)
+}
+
+function countAndUpdateScrollingTime() {
+  let syncData = {}
+  
+  if (settings.currentDate === getTodayTimeString()) {
+    if (typeof settings.timeCountToday === 'number') {
+      syncData['timeCountToday'] = settings.timeCountToday + 12
+    } else {
+      syncData['timeCountToday'] = 12
+    }
+  } else {
+    syncData['timeCountToday'] = 0
+  }
+
+  chrome.storage.sync.set(syncData)
+}
 
 function checkForNewsfeed(callBackOnNewsFeedFound) {
   $streamContainer = $(STEAM_CONTAINER_SELECTOR);
@@ -97,6 +163,9 @@ function prependToNewsFeed(element) {
   return $newsfeedContainer.prepend(element)
 }
 
+function updateTimerText() {
+  $newsfeedContainer.find('#ss-newsfeed-overlay span#scroll-time-count').text(Math.round(settings["timeCountToday"] / 60))
+}
 
 function showStopScrollingDialog() {
   let $stopScrollingOverlay = $newsfeedContainer.find('#ss-newsfeed-overlay')
@@ -109,24 +178,22 @@ function showStopScrollingDialog() {
       openNewsFeed(secToOpen)
     })
   })
+
+  updateTimerText()
   
   let $inputWaitForVideo = $stopScrollingDialog.find('input#wait-for-video')
+  $inputWaitForVideo.prop('checked', settings.waitForVideo);
+
   $inputWaitForVideo.change(function() {
     settings.waitForVideo = $inputWaitForVideo.is(":checked")
     chrome.storage.sync.set({
       waitForVideo: $inputWaitForVideo.is(":checked")
     })
   })
-
-  chrome.storage.sync.get({
-    waitForVideo: true
-  }, (items) => {
-    settings = items;
-    $inputWaitForVideo.prop('checked', items.waitForVideo);
-  });
 }
 
 function openNewsFeed(secToOpen) {
+  startTimer()
   $STOP_SCROLLING_OVERLAY_TEMPLATE.hide()
   console.log(`Open for ${secToOpen} secs`)
 
@@ -134,7 +201,7 @@ function openNewsFeed(secToOpen) {
   setTimeout(reCloseNewsfeed, secToOpen * 1000)
 
   // Set timer for reminder
-  setTimeout(notifyOutOfTime, (secToOpen - 15) * 1000);
+  setTimeout(notifyOutOfTime, (secToOpen - 10) * 1000);
 }
 
 function reCloseNewsfeed() {
@@ -151,9 +218,11 @@ function reCloseNewsfeed() {
   $.when(findNewsFeedContainer).done(function() {
     if ($newsFeedElement != undefined && $newsFeedElement != null && $newsFeedElement.data('injected') == 'true') {
       let closeNewsFeed = function() {
-        $STOP_SCROLLING_OVERLAY_TEMPLATE.show();
+        $STOP_SCROLLING_OVERLAY_TEMPLATE.show()
         $streamContainer.find('#ss-newsfeed-overlay').show()
-        scrollToTop();
+        updateTimerText()
+        scrollToTop()
+        stopTimer()
       }
       
       // Check if there are a video playing
@@ -162,12 +231,12 @@ function reCloseNewsfeed() {
       let playingVideoElem = getPlayingVideoElem();
       if (settings.waitForVideo && playingVideoElem) {
         playingVideoElem.onpause = () => {
-          closeNewsFeed();
-          playingVideoElem.onpause = null;
-          playingVideoElem.pause();
+          closeNewsFeed()
+          playingVideoElem.onpause = null
+          playingVideoElem.pause()
         };
       } else {
-        closeNewsFeed();
+        closeNewsFeed()
       }
     }
   })
@@ -194,7 +263,7 @@ function notifyOutOfTime() {
   // Check if user still on News Feed page, otherwise do nothing
   $.when(findNewsFeedContainer).done(function() {
     if ($newsFeedElement != undefined && $newsFeedElement != null && $newsFeedElement.data('injected') == 'true') {
-      let notyTimeOutInSecs = 15;
+      let notyTimeOutInSecs = 10;
       let notyText;
       let showProgressBar = true;
       // Check if there are a video playing
@@ -205,7 +274,6 @@ function notifyOutOfTime() {
         let videoRemainingSeconds = parseInt(playingVideoElem.duration - playingVideoElem.currentTime);
         notyText = `<strong>Video playing detected</strong><br/>Newsfeed will be close when video is paused or after it is ended - ${videoRemainingSeconds} seconds remaining (click to dismiss)`;
         showProgressBar = false;
-        notyTimeOutInSecs = 10;
       } else {
         notyText = `<strong>The Newsfeed will be closed in ${notyTimeOutInSecs} seconds (click to dismiss)</strong>`;
       }
