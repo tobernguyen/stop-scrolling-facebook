@@ -28,16 +28,19 @@ let SS_DIALOG_CONTENT = `
     <hr/>
     <p><strong>Coming Features</strong></p>
     <ul>
-      <li> - A counter for the amount of minutes spent scrolling in the day</li>
       <li> - Options to hide/show the longer time options (10 and 30 minutes)</li>
       <li> - Resume scrolling from the point that we have left</li>
       <li> - Re-design for a better User Experience</li>
+      <li> - Faster hiding newsfeed 
     </ul>
     <a href="https://chrome.google.com/webstore/detail/stop-scrolling-facebook/iceobahpfmegcflceepjpplhhbhdlakk/support" target="_blank">
       <p>Want new feature? Click here!</p>
     </a>
     <hr/>
     <strong>Helpful links</strong>
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EZ76G2GU3QYT8" target="_blank">
+      <p>Like this extension? Buy me a coffee!</p>
+    </a>
     <a href="https://chrome.google.com/webstore/detail/stop-scrolling-facebook/iceobahpfmegcflceepjpplhhbhdlakk/reviews" target="_blank">
       <p>Rate this application ★★★★★</p>
     </a>
