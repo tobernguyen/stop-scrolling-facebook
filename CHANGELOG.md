@@ -1,6 +1,10 @@
 # Change log
 All notable changes to this project will be documented in this file.
 
+## [1.0.4] - 2017-26-03
+### Added
+- Option to hide/show the longer time options (10 and 30 minutes)
+
 ## [1.0.3] - 2017-24-03
 ### Added
 - A counter for the amount of minutes spent scrolling in the day

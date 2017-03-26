@@ -19,19 +19,22 @@ let SS_DIALOG_CONTENT = `
     <a href="#" class="ss-open-nf" data-amount="60"><p>Nah! Just 1 min :D</p></a>
     <a href="#" class="ss-open-nf" data-amount="300"><p>Just 5 mins :(</p></a>
     <hr/>
-    <p><strong>USE WITH CAUTION</strong></p>
-    <a href="#" class="ss-open-nf" data-amount="600"><p>I NEED 10 MINUTES !</p></a>
-    <a href="#" class="ss-open-nf" data-amount="1800"><p>I AM THIRSTY. GIVE ME 30 MINUTES !!!</p></a>
-    <hr/>
+    <div id="use-with-caution" style="display: none">
+      <p><strong>USE WITH CAUTION</strong></p>
+      <a href="#" class="ss-open-nf" data-amount="600"><p>I NEED 10 MINUTES !</p></a>
+      <a href="#" class="ss-open-nf" data-amount="1800"><p>I AM THIRSTY. GIVE ME 30 MINUTES !!!</p></a>
+      <hr/>
+    </div>
     <p><strong>Settings</strong></p>
-    <label><input type="checkbox" id="wait-for-video"><span>Wait for playing video to pause/stop before closing newsfeed</span></label>
+    <div><label><input type="checkbox" id="wait-for-video"><span>Wait for playing video to pause/stop before closing newsfeed</span></label></div>
+    <div><label><input type="checkbox" id="enable-use-with-caution"><span class="enable-longer-time-options">Enable longer time options</span></label></div>
     <hr/>
     <p><strong>Coming Features</strong></p>
     <ul>
-      <li> - Options to hide/show the longer time options (10 and 30 minutes)</li>
       <li> - Resume scrolling from the point that we have left</li>
       <li> - Re-design for a better User Experience</li>
       <li> - Faster hiding newsfeed 
+      <li> - A button to stop scrolling even the time isn't over yet
     </ul>
     <a href="https://chrome.google.com/webstore/detail/stop-scrolling-facebook/iceobahpfmegcflceepjpplhhbhdlakk/support" target="_blank">
       <p>Want new feature? Click here!</p>
@@ -55,7 +58,8 @@ let NEWSFEED_STREAM_MATCHER = /^topnews_main_stream/
 let settings = {
   waitForVideo: true,
   currentDate: getTodayTimeString(),
-  timeCountToday: 0
+  timeCountToday: 0,
+  enableUseWithCation: false
 }
 
 function getTodayTimeString() {
@@ -66,7 +70,8 @@ function getTodayTimeString() {
 const SETTINGS_TEMPLATE = {
   waitForVideo: true,
   currentDate: getTodayTimeString(),
-  timeCountToday: 0
+  timeCountToday: 0,
+  enableUseWithCation: false
 }
 
 // GET config from storage
@@ -184,15 +189,37 @@ function showStopScrollingDialog() {
 
   updateTimerText()
   
+  // Wait for video section
   let $inputWaitForVideo = $stopScrollingDialog.find('input#wait-for-video')
-  $inputWaitForVideo.prop('checked', settings.waitForVideo);
-
+  $inputWaitForVideo.prop('checked', settings.waitForVideo)
   $inputWaitForVideo.change(function() {
     settings.waitForVideo = $inputWaitForVideo.is(":checked")
     chrome.storage.sync.set({
       waitForVideo: $inputWaitForVideo.is(":checked")
     })
   })
+
+  // Longer time option (aka Use with caution)
+  let $inputShowLongerTimeOptions = $stopScrollingDialog.find("input#enable-use-with-caution")
+  $inputShowLongerTimeOptions.prop('checked', settings.enableUseWithCation)
+  $inputShowLongerTimeOptions.change(function() {
+    if (settings.enableUseWithCation) {
+      alert('You made a right choice, and also a brave choice ;) But it will be definitely worth it!')
+      chrome.storage.sync.set({
+        enableUseWithCation: false
+      }, () => location.reload())
+    } else {
+      let confirm = window.confirm('!!!CAUTION!!!\n\nThis is a VERY VERY VERY DANGEROUS option. You will definitely SPEND MORE TIME on Facebook. Are you sure to do this?')
+      if (confirm) {
+        chrome.storage.sync.set({
+          enableUseWithCation: true
+        }, () => location.reload())
+      } else {
+        $inputShowLongerTimeOptions.prop('checked', settings.enableUseWithCation)
+      }
+    }
+  })
+  if (settings.enableUseWithCation) $stopScrollingDialog.find("#use-with-caution").show()
 }
 
 function openNewsFeed(secToOpen) {

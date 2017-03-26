@@ -4,3 +4,6 @@
 span#scroll-time-count {
   color: #4267b2;
 }
+span.enable-longer-time-options {
+      color: #dadada;
+}
