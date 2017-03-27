@@ -1,6 +1,13 @@
 # Change log
 All notable changes to this project will be documented in this file.
 
+## [1.0.5] - 2017-27-03
+### Changed
+- improve timer: only count when the tab is selected/active as browsing time
+
+### Fixed
+- fix bug that doesn’t reset timer when the day is over
+
 ## [1.0.4] - 2017-26-03
 ### Added
 - Option to hide/show the longer time options (10 and 30 minutes)
