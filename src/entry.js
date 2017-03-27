@@ -1,6 +1,16 @@
 import $ from 'jquery';
 import noty from 'noty';
 
+var isActive;
+
+window.onfocus = function () { 
+  isActive = true; 
+}; 
+
+window.onblur = function () { 
+  isActive = false; 
+}; 
+
 var $newsfeedContainer;
 var $streamContainer;
 let $STOP_SCROLLING_OVERLAY_TEMPLATE = $("<div id=\"ss-newsfeed-overlay\"><div class=\"ss-dialog\"></div></div>")
@@ -119,6 +129,9 @@ function stopTimer() {
 
 function countAndUpdateScrollingTime() {
   let syncData = {}
+
+  // Don't count if current window is not active
+  if (!isActive) return;
   
   if (settings.currentCountDate === getTodayTimeString()) {
     if (typeof settings.timeCountToday === 'number') {
