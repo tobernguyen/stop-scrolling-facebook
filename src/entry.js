@@ -57,7 +57,7 @@ let SS_DIALOG_CONTENT = `
 let NEWSFEED_STREAM_MATCHER = /^topnews_main_stream/
 let settings = {
   waitForVideo: true,
-  currentDate: getTodayTimeString(),
+  currentCountDate: getTodayTimeString(),
   timeCountToday: 0,
   enableUseWithCation: false
 }
@@ -69,7 +69,7 @@ function getTodayTimeString() {
 
 const SETTINGS_TEMPLATE = {
   waitForVideo: true,
-  currentDate: getTodayTimeString(),
+  currentCountDate: getTodayTimeString(),
   timeCountToday: 0,
   enableUseWithCation: false
 }
@@ -120,13 +120,14 @@ function stopTimer() {
 function countAndUpdateScrollingTime() {
   let syncData = {}
   
-  if (settings.currentDate === getTodayTimeString()) {
+  if (settings.currentCountDate === getTodayTimeString()) {
     if (typeof settings.timeCountToday === 'number') {
       syncData['timeCountToday'] = settings.timeCountToday + 12
     } else {
       syncData['timeCountToday'] = 12
     }
   } else {
+    syncData['currentCountDate'] = getTodayTimeString()
     syncData['timeCountToday'] = 0
   }
 
