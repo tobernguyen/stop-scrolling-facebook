@@ -95,9 +95,6 @@ chrome.storage.onChanged.addListener(items => {
   Object.keys(items).forEach(k => {
     if (items[k].newValue !== undefined) settings[k] = items[k].newValue
   })
-  if (Object.keys(items).includes('timeCountToday')) {
-
-  }
   console.log('new settings', settings)
 })
 
@@ -109,10 +106,11 @@ let firstCheckInterval = setInterval(function() {
   })
 }, 50)
 let backgroundCheckForNewsfeed = function(cb) {
-  checkForNewsfeed(function($newsfeedContainer) {
+  checkForNewsfeed(function(err, $newsfeedContainer) {
+    if (err) return
     hideNewsfeed().promise().done(() => {
       showStopScrollingDialog()
-      if (typeof cb === 'function') cb()
+      if (typeof cb === 'function') return cb()
     })
   })
 }
@@ -147,7 +145,21 @@ function countAndUpdateScrollingTime() {
   chrome.storage.sync.set(syncData)
 }
 
-function checkForNewsfeed(callBackOnNewsFeedFound) {
+function checkForNewsfeed(cb) {
+  tryToGetNewsfeed(function(err, $newsFeedElement) {
+    if (err) return cb(err)
+    if ($newsFeedElement !== undefined && $newsFeedElement !== null && $newsFeedElement.data('injected') !== 'true') {
+      $newsFeedElement.data('injected', 'true')
+      $newsfeedContainer = $newsFeedElement
+      console.log('SSF Injected')
+      return cb(null, $newsFeedElement)
+    } else {
+      return cb("Newsfeed not found!")
+    }
+  })
+}
+
+function tryToGetNewsfeed(cb) {
   $streamContainer = $(STEAM_CONTAINER_SELECTOR);
   let $newsFeedElement = null;
 
@@ -157,13 +169,8 @@ function checkForNewsfeed(callBackOnNewsFeedFound) {
     }
   })
 
-  $.when(findNewsFeedContainer).done(function() {
-    if ($newsFeedElement != undefined && $newsFeedElement != null && $newsFeedElement.data('injected') != 'true') {
-      $newsFeedElement.data('injected', 'true')
-      $newsfeedContainer = $newsFeedElement
-      console.log('SSF Injected')
-      callBackOnNewsFeedFound($newsFeedElement)
-    }
+  $.when(findNewsFeedContainer).done(() => {
+    return cb(null, $newsFeedElement)
   })
 }
 
@@ -196,7 +203,7 @@ function showStopScrollingDialog() {
   $stopScrollingDialog.html(SS_DIALOG_CONTENT)
   $stopScrollingDialog.find('.ss-open-nf').each(function() {
     $(this).click(function() {
-      let secToOpen = parseInt($(this).data('amount'))
+      let secToOpen = parseInt($(this).data('amount'), 10)
       openNewsFeed(secToOpen)
     })
   })
@@ -250,17 +257,10 @@ function openNewsFeed(secToOpen) {
 
 function reCloseNewsfeed() {
   $streamContainer = $(STEAM_CONTAINER_SELECTOR)
-  let $newsFeedElement = null;
-
-  let findNewsFeedContainer = $streamContainer.children().each(function() {
-    if (NEWSFEED_STREAM_MATCHER.test(this.id)) {
-      $newsFeedElement = $(this)
-    }
-  })
 
   // Check if user still on News Feed page, otherwise do nothing
-  $.when(findNewsFeedContainer).done(function() {
-    if ($newsFeedElement != undefined && $newsFeedElement != null && $newsFeedElement.data('injected') == 'true') {
+  tryToGetNewsfeed(function(err, $newsFeedElement) {
+    if (!err && $newsFeedElement !== undefined && $newsFeedElement !== null && $newsFeedElement.data('injected') === 'true') {
       let closeNewsFeed = function() {
         $STOP_SCROLLING_OVERLAY_TEMPLATE.show()
         $streamContainer.find('#ss-newsfeed-overlay').show()
@@ -296,17 +296,10 @@ function getPlayingVideoElem() {
 
 function notifyOutOfTime() {
   $streamContainer = $(STEAM_CONTAINER_SELECTOR)
-  let $newsFeedElement = null;
-
-  let findNewsFeedContainer = $streamContainer.children().each(function() {
-    if (NEWSFEED_STREAM_MATCHER.test(this.id)) {
-      $newsFeedElement = $(this)
-    }
-  })
 
   // Check if user still on News Feed page, otherwise do nothing
-  $.when(findNewsFeedContainer).done(function() {
-    if ($newsFeedElement != undefined && $newsFeedElement != null && $newsFeedElement.data('injected') == 'true') {
+  tryToGetNewsfeed(function(err, $newsFeedElement) {
+    if (!err && $newsFeedElement !== undefined && $newsFeedElement !== null && $newsFeedElement.data('injected') === 'true') {
       let notyTimeOutInSecs = 10;
       let notyText;
       let showProgressBar = true;
@@ -315,7 +308,7 @@ function notifyOutOfTime() {
       // otherwise close newsfeed immediately
       let playingVideoElem = getPlayingVideoElem();
       if (settings.waitForVideo && playingVideoElem) {
-        let videoRemainingSeconds = parseInt(playingVideoElem.duration - playingVideoElem.currentTime);
+        let videoRemainingSeconds = parseInt(playingVideoElem.duration - playingVideoElem.currentTime, 10);
         notyText = `<strong>Video playing detected</strong><br/>Newsfeed will be close when video is paused or after it is ended - ${videoRemainingSeconds} seconds remaining (click to dismiss)`;
         showProgressBar = false;
       } else {

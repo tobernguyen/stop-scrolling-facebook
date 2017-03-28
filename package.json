@@ -23,6 +23,7 @@
     "webpack": "^1.12.2"
   },
   "dependencies": {
+    "eslint": "^3.18.0",
     "noty": "^2.4.1"
   }
 }
