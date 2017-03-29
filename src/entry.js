@@ -1,7 +1,8 @@
-import $ from 'jquery';
-import noty from 'noty';
+import $ from 'jquery'
+import noty from 'noty'
 
-var isActive = true;
+let isActive = true
+let previousScrollPosition = -1
 
 window.onfocus = function () { 
   console.log('on focus')
@@ -13,8 +14,8 @@ window.onblur = function () {
   isActive = false
 }; 
 
-var $newsfeedContainer;
-var $streamContainer;
+let $newsfeedContainer;
+let $streamContainer;
 let $STOP_SCROLLING_OVERLAY_TEMPLATE = $("<div id=\"ss-newsfeed-overlay\"><div class=\"ss-dialog\"></div></div>")
 let OVERLAY_DEFAULT_STYLE = { 
                               'position': 'absolute', 
@@ -39,11 +40,11 @@ let SS_DIALOG_CONTENT = `
     </div>
     <p><strong>Settings</strong></p>
     <div><label><input type="checkbox" id="wait-for-video"><span>Wait for playing video to pause/stop before closing newsfeed</span></label></div>
+    <div><label><input type="checkbox" id="return-to-previous-position"><span>Auto scroll to the position before closing newsfeed</span></label></div>
     <div><label><input type="checkbox" id="enable-use-with-caution"><span class="enable-longer-time-options">Enable longer time options</span></label></div>
     <hr/>
     <p><strong>Coming Features</strong></p>
     <ul>
-      <li> - Resume scrolling from the point that we have left</li>
       <li> - Re-design for a better User Experience</li>
       <li> - Faster hiding newsfeed 
       <li> - A button to stop scrolling even the time isn't over yet
@@ -72,6 +73,7 @@ let SS_DIALOG_CONTENT = `
 let NEWSFEED_STREAM_MATCHER = /^topnews_main_stream/
 let settings = {
   waitForVideo: true,
+  returnToPreviousPosition: true,
   currentCountDate: getTodayTimeString(),
   timeCountToday: 0,
   enableUseWithCation: false
@@ -84,6 +86,7 @@ function getTodayTimeString() {
 
 const SETTINGS_TEMPLATE = {
   waitForVideo: true,
+  returnToPreviousPosition: true,
   currentCountDate: '1-1-1970',
   timeCountToday: 0,
   enableUseWithCation: false
@@ -237,6 +240,16 @@ function showStopScrollingDialog() {
     })
   })
 
+  // Return to previous position
+  let $inputReturnToPreviousPosition = $stopScrollingDialog.find('input#return-to-previous-position')
+  $inputReturnToPreviousPosition.prop('checked', settings.returnToPreviousPosition)
+  $inputReturnToPreviousPosition.change(function() {
+    settings.returnToPreviousPosition = $inputReturnToPreviousPosition.is(":checked")
+    chrome.storage.sync.set({
+      returnToPreviousPosition: $inputReturnToPreviousPosition.is(":checked")
+    })
+  })
+
   // Longer time option (aka Use with caution)
   let $inputShowLongerTimeOptions = $stopScrollingDialog.find("input#enable-use-with-caution")
   $inputShowLongerTimeOptions.prop('checked', settings.enableUseWithCation)
@@ -263,6 +276,12 @@ function showStopScrollingDialog() {
 function openNewsFeed(secToOpen) {
   startTimer()
   $STOP_SCROLLING_OVERLAY_TEMPLATE.hide()
+
+  // Scroll to previous position
+  if (settings.returnToPreviousPosition) {
+    $("html, body").animate({scrollTop: previousScrollPosition})
+  }
+  
   console.log(`Open for ${secToOpen} secs`)
 
   // Set timer to hide news feed again
@@ -281,6 +300,7 @@ function reCloseNewsfeed() {
       let closeNewsFeed = function() {
         $STOP_SCROLLING_OVERLAY_TEMPLATE.show()
         $streamContainer.find('#ss-newsfeed-overlay').show()
+        storeCurrentScrollPosition()
         updateTimerText()
         scrollToTop()
         stopTimer()
@@ -342,4 +362,8 @@ function notifyOutOfTime() {
       });
     }
   })
+}
+
+function storeCurrentScrollPosition() {
+  previousScrollPosition = document.documentElement.scrollTop || document.body.scrollTop
 }

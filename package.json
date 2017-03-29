@@ -1,6 +1,6 @@
 {
   "name": "stop-scrolling-facebook",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "Go to Facebook just for work, but then be distracted by Newsfeed?. \"Stop Scrolling Facebook\" is here to help you get back to work!",
   "main": "stop-scrolling.js",
   "scripts": {

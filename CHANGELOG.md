@@ -1,6 +1,10 @@
 # Change log
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2017-29-03
+### Added
+- Now the extension can auto scroll to the position before closing newsfeed
+
 ## [1.0.6] - 2017-29-03
 ### Fixed
 - fix the bugs related to resetting timer when the day is over
