@@ -1,6 +1,10 @@
 # Change log
 All notable changes to this project will be documented in this file.
 
+## [1.0.6] - 2017-29-03
+### Fixed
+- fix the bugs related to resetting timer when the day is over
+
 ## [1.0.5] - 2017-27-03
 ### Changed
 - improve timer: only count when the tab is selected/active as browsing time
