@@ -1,14 +1,16 @@
 import $ from 'jquery';
 import noty from 'noty';
 
-var isActive;
+var isActive = true;
 
 window.onfocus = function () { 
-  isActive = true; 
+  console.log('on focus')
+  isActive = true
 }; 
 
 window.onblur = function () { 
-  isActive = false; 
+  console.log('on blur')
+  isActive = false
 }; 
 
 var $newsfeedContainer;
@@ -51,14 +53,17 @@ let SS_DIALOG_CONTENT = `
     </a>
     <hr/>
     <strong>Helpful links</strong>
-    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EZ76G2GU3QYT8" target="_blank">
-      <p>Like this extension? Buy me a coffee!</p>
-    </a>
     <a href="https://chrome.google.com/webstore/detail/stop-scrolling-facebook/iceobahpfmegcflceepjpplhhbhdlakk/reviews" target="_blank">
       <p>Rate this application ★★★★★</p>
     </a>
+    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EZ76G2GU3QYT8" target="_blank">
+      <p>Like this extension? Buy me a coffee!</p>
+    </a>
     <a href="https://chrome.google.com/webstore/detail/stop-scrolling-facebook/iceobahpfmegcflceepjpplhhbhdlakk/support" target="_blank">
       <p>Ask for support or tell us your suggestion to make this application better</p>
+    </a>
+    <a href="https://github.com/tobernguyen/stop-scrolling-facebook" target="_blank">
+      <p>Contribute to this open-source project or star it if you like!</p>
     </a>
     <a href="https://github.com/tobernguyen/stop-scrolling-facebook/blob/master/CHANGELOG.md" target="_blank">
       <p>Change log</p>
@@ -79,14 +84,26 @@ function getTodayTimeString() {
 
 const SETTINGS_TEMPLATE = {
   waitForVideo: true,
-  currentCountDate: getTodayTimeString(),
+  currentCountDate: '1-1-1970',
   timeCountToday: 0,
   enableUseWithCation: false
 }
 
 // GET config from storage
-chrome.storage.sync.get(SETTINGS_TEMPLATE, (items) => {
+chrome.storage.sync.get(SETTINGS_TEMPLATE, function(items) {
+  console.log('get data done', items);
   settings = items;
+
+  // If the day has passed since last time opened Facebook
+  // reset the timer and set currentCountDate to today
+  if (items.currentCountDate !== getTodayTimeString()) {
+    console.log('SSF', 'Reset timer')
+    settings.timeCountToday = 0
+    chrome.storage.sync.set({
+      timeCountToday: 0,
+      currentCountDate: getTodayTimeString()
+    })
+  }
 })
 
 // What to do receive new storage value
