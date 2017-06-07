@@ -1,6 +1,10 @@
 # Change log
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2017-07-06
+### Modified
+- Changed app's name, icon, promotional tile
+
 ## [1.1.0] - 2017-29-03
 ### Added
 - Now the extension can auto scroll to the position before closing newsfeed

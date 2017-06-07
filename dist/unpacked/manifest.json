@@ -1,7 +1,7 @@
 {
-  "name": "Stop Scrolling Facebook",
-  "version": "1.1.0",
-  "description": "Go to Facebook just for WORK, but then be distracted by Newsfeed?. \"Stop Scrolling Facebook\" is here to help you GET BACK to WORK!",
+  "name": "Stop Scrolling Newsfeed for Facebook",
+  "version": "1.1.1",
+  "description": "Go to Facebook just for WORK, but then be distracted by Newsfeed?. \"Stop Scrolling Newsfeed\" is here to help you GET BACK to WORK!",
   "manifest_version": 2,
   "icons": { 
               "16": "icon16.png",
