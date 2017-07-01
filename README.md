@@ -1,4 +1,4 @@
-# Stop Scrolling Facebook
+# Stop Scrolling Newsfeed for Facebook
 A chrome extension prevent you from distraction of Facebook's newsfeed
 
 [![Code Climate](https://codeclimate.com/github/tobernguyen/stop-scrolling-facebook/badges/gpa.svg)](https://codeclimate.com/github/tobernguyen/stop-scrolling-facebook)
@@ -7,9 +7,9 @@ A chrome extension prevent you from distraction of Facebook's newsfeed
 ![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)
 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
-[Install from Chrome Web Store](https://chrome.google.com/webstore/detail/stop-scrolling-facebook/iceobahpfmegcflceepjpplhhbhdlakk)
+[Install from Chrome Web Store](https://chrome.google.com/webstore/detail/stop-scrolling-newsfeed-f/nhcbjhbdnlkddnapaoidpkfbjkpkpdcj)
 
-![Stop Scrolling Facebook screenshot](http://i.imgur.com/wA3LSZz.png)
+![Stop Scrolling Newsfeed for Facebook screenshot](http://i.imgur.com/wA3LSZz.png)
 
 # Development
 To get started, clone the repository and then run:
