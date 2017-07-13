@@ -1,6 +1,10 @@
 # Change log
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2017-07-13
+### Modified
+- Updated new chrome store link
+
 ## [1.1.1] - 2017-07-06
 ### Modified
 - Changed app's name, icon, promotional tile

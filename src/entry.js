@@ -49,18 +49,18 @@ let SS_DIALOG_CONTENT = `
       <li> - Faster hiding newsfeed 
       <li> - A button to stop scrolling even the time isn't over yet
     </ul>
-    <a href="https://chrome.google.com/webstore/detail/stop-scrolling-facebook/iceobahpfmegcflceepjpplhhbhdlakk/support" target="_blank">
+    <a href="https://chrome.google.com/webstore/detail/stop-scrolling-newsfeed-f/nhcbjhbdnlkddnapaoidpkfbjkpkpdcj/support" target="_blank">
       <p>Want new feature? Click here!</p>
     </a>
     <hr/>
     <strong>Helpful links</strong>
-    <a href="https://chrome.google.com/webstore/detail/stop-scrolling-facebook/iceobahpfmegcflceepjpplhhbhdlakk/reviews" target="_blank">
+    <a href="https://chrome.google.com/webstore/detail/stop-scrolling-newsfeed-f/nhcbjhbdnlkddnapaoidpkfbjkpkpdcj/reviews" target="_blank">
       <p>Rate this application ★★★★★</p>
     </a>
     <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=EZ76G2GU3QYT8" target="_blank">
       <p>Like this extension? Buy me a coffee!</p>
     </a>
-    <a href="https://chrome.google.com/webstore/detail/stop-scrolling-facebook/iceobahpfmegcflceepjpplhhbhdlakk/support" target="_blank">
+    <a href="https://chrome.google.com/webstore/detail/stop-scrolling-newsfeed-f/nhcbjhbdnlkddnapaoidpkfbjkpkpdcj/support" target="_blank">
       <p>Ask for support or tell us your suggestion to make this application better</p>
     </a>
     <a href="https://github.com/tobernguyen/stop-scrolling-facebook" target="_blank">
