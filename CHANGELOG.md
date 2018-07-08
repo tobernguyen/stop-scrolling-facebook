@@ -1,6 +1,9 @@
 # Change log
 All notable changes to this project will be documented in this file.
 
+## [1.1.3] - 2018-07-08
+- Add customizable option, now user can open newsfeed for as many minutes as they want
+
 ## [1.1.2] - 2017-07-13
 ### Modified
 - Updated new chrome store link

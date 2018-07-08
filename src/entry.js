@@ -35,13 +35,14 @@ let SS_DIALOG_CONTENT = `
     <div id="use-with-caution" style="display: none">
       <p><strong>USE WITH CAUTION</strong></p>
       <a href="#" class="ss-open-nf" data-amount="600"><p>I NEED 10 MINUTES !</p></a>
-      <a href="#" class="ss-open-nf" data-amount="1800"><p>I AM THIRSTY. GIVE ME 30 MINUTES !!!</p></a>
+      <a href="#" class="ss-open-nf" data-amount="1800"><p>I WANT MORE. GIVE ME 30 MINUTES !!!</p></a>
+      <a href="#" class="ss-open-nf-custom"><p>GIVE ME X MINUTES (CUSTOM)</p></a>
       <hr/>
     </div>
     <p><strong>Settings</strong></p>
     <div><label><input type="checkbox" id="wait-for-video"><span>Wait for playing video to pause/stop before closing newsfeed</span></label></div>
     <div><label><input type="checkbox" id="return-to-previous-position"><span>Auto scroll to the position before closing newsfeed</span></label></div>
-    <div><label><input type="checkbox" id="enable-use-with-caution"><span class="enable-longer-time-options">Enable longer time options</span></label></div>
+    <div><label><input type="checkbox" id="enable-use-with-caution"><span class="enable-longer-time-options">Enable longer time and customizable options</span></label></div>
     <hr/>
     <p><strong>Coming Features</strong></p>
     <ul>
@@ -76,6 +77,7 @@ let settings = {
   returnToPreviousPosition: true,
   currentCountDate: getTodayTimeString(),
   timeCountToday: 0,
+  customTime: 0,
   enableUseWithCation: false
 }
 
@@ -89,6 +91,7 @@ const SETTINGS_TEMPLATE = {
   returnToPreviousPosition: true,
   currentCountDate: '1-1-1970',
   timeCountToday: 0,
+  customTime: 0,
   enableUseWithCation: false
 }
 
@@ -221,6 +224,18 @@ function showStopScrollingDialog() {
   let $stopScrollingDialog = $stopScrollingOverlay.find('.ss-dialog')
 
   $stopScrollingDialog.html(SS_DIALOG_CONTENT)
+  $stopScrollingDialog.find('.ss-open-nf-custom').click(function() {
+    let minutes = Number(window.prompt('How many minutes do you want?', settings.customTime || ''))
+    if (minutes <= 0) {
+      window.alert('Invalid. Must be greater than 0 minutes.')
+    } else {
+      openNewsFeed(minutes * 60)
+      settings.customTime = minutes
+      chrome.storage.sync.set({
+        customTime: minutes
+      })
+    }
+  })
   $stopScrollingDialog.find('.ss-open-nf').each(function() {
     $(this).click(function() {
       let secToOpen = parseInt($(this).data('amount'), 10)
