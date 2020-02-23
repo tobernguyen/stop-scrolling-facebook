@@ -1,6 +1,9 @@
 # Change log
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2020-02-22
+- Support Facebook Beta
+
 ## [1.1.3] - 2018-07-08
 - Add customizable option, now user can open newsfeed for as many minutes as they want
 
