@@ -121,10 +121,15 @@ main()
 let $newsfeedContainer
 async function main () {
   async function onNewsfeedPageFound () {
-    await injectSSF()
-    await scrollToTop()
-    await insertSSFOverlay()
-    await showStopScrollingDialog()
+    // If it is newsfeed from group, ignore it as we want to block homepage's newsfeed only
+    if (await isUserOnGroup()) {
+      console.log('User is on group, ignore the newsfeed. Do nothing.')
+    } else {
+      await injectSSF()
+      await scrollToTop()
+      await insertSSFOverlay()
+      await showStopScrollingDialog()
+    }
   }
 
   // Quickly find the newsfeed container right after users open new Facebook tab
@@ -142,7 +147,6 @@ async function watchForNewsfeedPage (interval, cb, findOnce = false) {
       // Check if newsfeed container is valid
       if ($newsfeedContainer !== undefined && $newsfeedContainer !== null && $newsfeedContainer.attr('ssf-injected') !== 'true') {
         console.log('Newsfeed found')
-        console.log($newsfeedContainer)
 
         await cb()
 
@@ -194,7 +198,15 @@ async function injectSSF () {
   console.log('SSF Injected')
 }
 
+async function isUserOnGroup () {
+  const { pathname } = window.location
+  return pathname.startsWith('/groups/')
+}
+
 async function isNewsfeedPageOnScreen () {
+  if (await isUserOnGroup()) {
+    return false
+  }
   const $container = await findNewsfeedContainer()
   return ($container !== undefined && $container !== null && $container.attr('ssf-injected') === 'true' && $container.is(':visible'))
 }

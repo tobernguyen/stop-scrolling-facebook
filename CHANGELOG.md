@@ -1,6 +1,9 @@
 # Change log
 All notable changes to this project will be documented in this file.
 
+## [1.2.1] - 2020-02-25
+- Fix the bug hiding newsfeed when users are on group
+
 ## [1.2.0] - 2020-02-22
 - Support Facebook Beta
 
